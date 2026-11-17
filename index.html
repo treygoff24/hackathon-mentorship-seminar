@@ -74,9 +74,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .screen.leaving { visibility: visible; z-index: 2; }
 #wipe {
   position: absolute; top: 0; bottom: 150px; left: 0; width: 150px;
-  background: var(--pink); z-index: 3; visibility: hidden;
-  box-shadow: 0 0 0 0 transparent;
+  background: linear-gradient(90deg, var(--pink-lo) 0 12%, var(--pink) 12% 78%, #f6a79d 78%);
+  z-index: 3; visibility: hidden;
 }
+
+/* a pencil that writes and one that rubs out; each is placed by its working end */
+.tool { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 6; opacity: 0; pointer-events: none; transition: opacity .16s; will-change: transform; }
+.tool .pencil { position: absolute; left: 0; top: -36px; width: 780px; height: 72px; }
+.tool .tip { width: 108px; }
+.crumb { position: absolute; z-index: 6; width: 11px; height: 6px; border-radius: 3px; background: var(--pink-lo); pointer-events: none; }
+#grain {
+  position: absolute; inset: 0; z-index: 7; pointer-events: none; opacity: .22; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 .66'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+:root[data-theme="dark"] #grain { mix-blend-mode: screen; opacity: .1; filter: invert(1); }
 
 [data-step] {
   opacity: 0; transform: translateY(26px);
@@ -146,7 +157,6 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   font-size: 190px; font-weight: 400; font-stretch: 100%;
   clip-path: inset(-20% 0 -20% 0);
 }
-#rub { position: absolute; bottom: -10px; left: 0; width: 120px; height: 230px; background: var(--pink); border-radius: 14px; opacity: 0; }
 #line2 {
   position: absolute; left: 110px; top: 404px; white-space: nowrap; text-transform: uppercase;
   font-size: 200px; font-weight: 900; font-stretch: 70%; line-height: .86; letter-spacing: -.01em;
@@ -164,6 +174,16 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   font-size: 58px; font-weight: 800; font-stretch: 84%; line-height: 1.08; max-width: 1640px;
   text-wrap: balance;
 }
+
+/* hype: the setup */
+#hy-a { position: relative; font-size: 104px; font-weight: 400; font-stretch: 90%; white-space: nowrap; }
+#hy-a .solid { display: inline-block; }
+#hy-a .ghost { position: absolute; left: 0; top: 0; opacity: 0; filter: blur(2.5px); transition: opacity .5s; }
+#hy-a.rubbed .ghost { opacity: .2; }
+#hy-b { display: inline-block; margin-top: 30px; font-size: 112px; font-weight: 900; font-stretch: 76%; white-space: nowrap; }
+#hy-list { margin-top: 56px; display: flex; gap: 26px; align-items: flex-start; }
+#hy-list p { background: var(--ink); color: var(--field); padding: 22px 32px 26px; font-size: 57px; font-weight: 800; font-stretch: 80%; white-space: nowrap; }
+#s-hype .caption { margin-top: 56px; }
 
 /* reverse */
 #s-reverse h1 { font-size: 78px; }
@@ -207,9 +227,8 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   font-size: 40px; font-weight: 700; font-stretch: 86%; line-height: 1.08;
   transition: opacity .9s var(--ease), transform 1.1s var(--ease), background-color .7s var(--ease) .5s, color .7s var(--ease) .5s, filter .9s, border-color .9s;
 }
-#s-model.shipped .block.goes { opacity: .2; filter: blur(3px); border-color: transparent; transform: translateY(18px) rotate(var(--r, 1deg)); }
-#s-model.shipped .block.stays { background: var(--ink); color: var(--field); }
-#sweep { position: absolute; top: -20px; bottom: -20px; left: -260px; width: 200px; background: var(--pink); border-radius: 18px; opacity: 0; transform: rotate(4deg); pointer-events: none; }
+#s-model.shipped .block.goes { opacity: .2; filter: blur(3px); border-color: transparent; transform: translateY(18px) rotate(var(--r, 1deg)); transition-delay: var(--d, 0s); }
+#s-model.shipped .block.stays { background: var(--ink); color: var(--field); transition-delay: calc(var(--d, 0s) + .25s); }
 #s-model .caption { margin-top: 44px; }
 
 /* say do pay */
@@ -252,7 +271,7 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
 <main id="stage">
 
   <section class="screen" id="s-home" data-label="Home">
-    <div id="line1box"><div id="line1">The tools changed.</div><div id="rub"></div></div>
+    <div id="line1box"><div id="line1">The tools changed.</div></div>
     <h1 id="line2">The fundamentals didn&rsquo;t.</h1>
     <p id="byline">Trey Goff &amp; Alex Younger<span>FEE hackathon mentorship &middot; November 17, 2026</span></p>
   </section>
@@ -292,7 +311,6 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
       <div class="block stays">Standards for reliable systems</div>
       <div class="block stays">The long-term vision</div>
       <div class="block goes" style="--r:-1deg">Your original architecture</div>
-      <div id="sweep"></div>
     </div>
     <p class="caption" data-step="2">If a model release killed half your implementation tomorrow, what would still be valuable?</p>
   </section>
@@ -327,10 +345,15 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
     <p class="caption" data-step="3">Right idea &ne; right business.</p>
   </section>
 
-  <section class="screen prompt" id="s-hype" data-label="AI hype">
-    <h1>The trap: shipping careless code because &ldquo;AI will clean it up later.&rdquo;</h1>
-    <p class="story" data-step="1">AI is a good copilot and a bad architect. The judgment layer is still yours.</p>
-    <p class="point" data-step="2">AI lowers the cost of writing code, not the cost of living with bad code.</p>
+  <section class="screen" id="s-hype" data-label="AI hype">
+    <h1 id="hy-a"><span class="ghost" aria-hidden="true">Everyone says AI changes everything.</span><span class="solid">Everyone says AI changes everything.</span></h1>
+    <h2 id="hy-b">Here&rsquo;s what it doesn&rsquo;t change:</h2>
+    <div id="hy-list">
+      <p data-step="2">What to build.</p>
+      <p data-step="3">For whom.</p>
+      <p data-step="4">Whether the foundation holds.</p>
+    </div>
+    <p class="caption" data-step="5">AI lowers the cost of writing code, not the cost of living with bad code.</p>
   </section>
 
   <section class="screen" id="s-close" data-label="The close">
@@ -346,6 +369,9 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   </section>
 
   <div id="wipe"></div>
+  <div class="tool" id="writer" aria-hidden="true"><div class="pencil"><i class="tip"></i><div class="barrel"></div><i class="ferrule"></i><i class="eraser"></i></div></div>
+  <div class="tool" id="rubber" aria-hidden="true"><div class="pencil flip"><i class="eraser"></i><i class="ferrule"></i><div class="barrel"></div><i class="tip"></i></div></div>
+  <div id="grain" aria-hidden="true"></div>
   <div id="dots" aria-hidden="true"></div>
 
   <nav id="nav" aria-label="Screens">
@@ -366,10 +392,11 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   addEventListener('resize', fit); fit();
 
   // Screens in talk order. Index 0 is home; keys 1 to 9 map to the rest.
-  const order = ['home', 'roadblocks', 'reverse', 'decisions', 'model', 'who', 'sdp', 'three', 'hype', 'close'];
+  const order = ['home', 'hype', 'roadblocks', 'reverse', 'decisions', 'model', 'who', 'sdp', 'three', 'close'];
   const screens = order.map(id => document.getElementById('s-' + id));
   const steps = screens.map(s => Math.max(0, ...[...s.querySelectorAll('[data-step]')].map(e => +e.dataset.step)));
   steps[order.indexOf('model')] = 2;
+  document.querySelectorAll('#blocks .block').forEach((b, i) => b.style.setProperty('--d', (i % 4) * .2 + 's'));
   steps[order.indexOf('sdp')] = 3;
   let cur = -1, step = 0, busy = false;
 
@@ -388,11 +415,45 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
 
   const dots = document.getElementById('dots');
 
-  function render() {
+  // The two pencils. A sweep carries one across an element, left to right, writing it in or rubbing it out.
+  const writer = document.getElementById('writer'), rubber = document.getElementById('rubber');
+  let epoch = 0;
+  function crumb(x, y) {
+    const c = document.createElement('i');
+    c.className = 'crumb'; c.style.left = x + 'px'; c.style.top = y + 'px'; stage.append(c);
+    const dx = (Math.random() - .5) * 140, dy = 120 + Math.random() * 240;
+    c.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) rotate(${dx * 5}deg)`, opacity: 0 }],
+      { duration: 650 + Math.random() * 500, easing: 'cubic-bezier(.3, 0, .8, .6)' }).onfinish = () => c.remove();
+  }
+  function sweep(tool, el, o = {}) {
+    const done = o.erase ? 'inset(0 0 0 100%)' : '', clip = o.clip !== false;
+    return new Promise(res => {
+      if (reduced) { if (clip) el.style.clipPath = done; return res(true); }
+      const ep = epoch, sr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+      const x0 = (r.left - sr.left) / scale, w = r.width / scale, top = (r.top - sr.top) / scale, h = r.height / scale;
+      const waves = o.waves ?? 7, t0 = performance.now();
+      let last = 0;
+      (function frame(t) {
+        if (ep !== epoch) { tool.style.opacity = 0; return res(false); }
+        const p = Math.min(1, Math.max(0, (t - t0) / o.dur)), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        const X = e * w, wig = Math.sin(p * Math.PI * waves), y = top + h * (o.mid ?? .55) + h * (o.amp ?? .28) * wig;
+        if (clip) el.style.clipPath = o.erase ? `inset(-30% -5% -30% ${X}px)` : `inset(-30% ${w - X}px -30% -5%)`;
+        tool.style.opacity = 1;
+        tool.style.transform = `translate(${x0 + X}px, ${y}px) rotate(${-58 + 5 * wig}deg)`;
+        if (o.erase && t - last > 40) { last = t; crumb(x0 + X, y); }
+        if (p < 1) return requestAnimationFrame(frame);
+        tool.style.opacity = 0; if (clip) el.style.clipPath = done; res(true);
+      })(t0);
+    });
+  }
+
+  function render(prev = -1) {
+    epoch++;
+    writer.style.opacity = rubber.style.opacity = 0;
     const s = screens[cur];
     s.querySelectorAll('[data-step]').forEach(e => e.classList.toggle('on', +e.dataset.step <= step));
     dots.innerHTML = steps[cur] ? Array.from({ length: steps[cur] + 1 }, (_, i) => `<i class="${i <= step ? 'on' : ''}"></i>`).join('') : '';
-    hooks[order[cur]]?.(step);
+    hooks[order[cur]]?.(step, prev);
   }
 
   function go(i, atStep = 0) {
@@ -423,8 +484,8 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
     })(t0);
   }
 
-  const advance = () => { if (step < steps[cur]) { step++; render(); } else go((cur + 1) % screens.length); };
-  const back = () => { if (step > 0) { step--; render(); } else if (cur > 0) go(cur - 1, steps[cur - 1]); };
+  const advance = () => { if (step < steps[cur]) { step++; render(step - 1); } else go((cur + 1) % screens.length); };
+  const back = () => { if (step > 0) { step--; render(step + 1); } else if (cur > 0) go(cur - 1, steps[cur - 1]); };
 
   addEventListener('keydown', e => {
     if (e.target.matches('input')) { if (e.key === 'Escape') e.target.blur(); return; }
@@ -445,23 +506,30 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   // ---------- per-screen behaviour ----------
   const hooks = {
     sdp(n) { screens[cur].dataset.at = n; },
-    model(n) {
-      const s = screens[cur], was = s.classList.contains('shipped');
+    model(n, prev) {
+      const s = screens[cur];
       document.getElementById('m-a').classList.toggle('off', n > 0);
       document.getElementById('m-b').classList.toggle('off', n === 0);
       s.classList.toggle('shipped', n > 0);
-      if (n === 1 && !was && !reduced) {
-        document.getElementById('sweep').animate(
-          [{ left: '-260px', opacity: 1 }, { left: '1760px', opacity: 1, offset: .92 }, { left: '1800px', opacity: 0 }],
-          { duration: 900, easing: 'cubic-bezier(.5,0,.2,1)' });
+      if (n === 1 && prev === 0) sweep(rubber, document.getElementById('blocks'), { erase: true, clip: false, dur: 1050, amp: .4, mid: .5, waves: 6 });
+    },
+    hype(n, prev) {
+      const h1 = document.getElementById('hy-a'), a = h1.querySelector('.solid'), b = document.getElementById('hy-b');
+      h1.classList.toggle('rubbed', n >= 1);
+      a.style.clipPath = n >= 1 ? 'inset(0 0 0 100%)' : '';
+      b.style.visibility = n >= 1 ? 'visible' : 'hidden';
+      b.style.clipPath = '';
+      if (n === 1 && prev === 0 && !reduced) {
+        a.style.clipPath = ''; b.style.clipPath = 'inset(0 100% 0 0)';
+        sweep(rubber, a, { erase: true, dur: 800 }).then(ok => ok && sweep(writer, b, { dur: 1000, waves: 15, amp: .3, mid: .5 }));
       }
     },
     three(n) { screens[cur].querySelectorAll('#rings path').forEach(p => p.classList.toggle('on', +p.dataset.ring <= n)); },
-    home() { startHome(); },
+    home() { line1.style.clipPath = ''; startHome(); },
   };
 
   // Home: the first line keeps getting rubbed out and rewritten in a new cut of the typeface. The second never moves.
-  const line1 = document.getElementById('line1'), rub = document.getElementById('rub');
+  const line1 = document.getElementById('line1');
   const cuts = [[100, 400], [62, 900], [125, 200], [84, 700], [112, 500], [70, 300], [100, 900]];
   let cut = 0, homeTimer = null;
   function setCut(i) {
@@ -476,17 +544,15 @@ h1, h2 { font-weight: 800; font-stretch: 84%; line-height: 1.02; letter-spacing:
   }
   function rewrite() {
     if (order[cur] !== 'home') return;
-    const out = line1.animate([{ clipPath: 'inset(-20% 0 -20% 0)' }, { clipPath: 'inset(-20% 0 -20% 100%)' }], { duration: 700, easing: 'cubic-bezier(.5,0,.3,1)', fill: 'forwards' });
-    rub.animate([{ left: '-120px', opacity: 1 }, { left: '1700px', opacity: 1, offset: .95 }, { left: '1700px', opacity: 0 }], { duration: 740, easing: 'cubic-bezier(.5,0,.3,1)' });
-    out.onfinish = () => {
+    sweep(rubber, line1, { erase: true, dur: 850 }).then(ok => {
+      if (!ok) return;
       cut = (cut + 1) % cuts.length; setCut(cut);
-      out.cancel();
-      line1.animate([{ clipPath: 'inset(-20% 100% -20% 0)' }, { clipPath: 'inset(-20% 0 -20% 0)' }], { duration: 900, easing: 'cubic-bezier(.16,1,.3,1)' });
-    };
+      sweep(writer, line1, { dur: 1150, waves: 17, amp: .3, mid: .52 });
+    });
   }
   function startHome() {
     clearInterval(homeTimer);
-    if (!reduced) homeTimer = setInterval(rewrite, 4200);
+    if (!reduced) homeTimer = setInterval(rewrite, 5600);
   }
 
   // Reversible: tags the presenter types in and drags along the pencil.
